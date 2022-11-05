@@ -13,8 +13,10 @@ const SchemaUser = Schema({
         type: String, 
         required: [true, "DB: Password is required"],
     },
-    // token: {
-    // },
+    token: {
+        type: String,
+        default: null,
+    },
     // roles: {
     // }    
 },
