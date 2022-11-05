@@ -24,7 +24,7 @@ const SchemaDevice = Schema({
     timestamps: true, 
 })
 
-const deviceModel = model('device', SchemaDevice)
+const DeviceModel = model('device', SchemaDevice);
 
 
-module.exports = deviceModel;
+module.exports = DeviceModel;
