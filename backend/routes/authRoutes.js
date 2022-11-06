@@ -3,7 +3,7 @@
 const { Router } = require('express');
 const router = Router();
 const { AuthController } = require('../controllers');
-const { authMiddleware } = require('../middlewares');
+const { authMiddleware, rolesMiddleware, validateTokenMiddleware } = require('../middlewares');
 
 
 // registration - добавление пользователя в БД
@@ -15,9 +15,9 @@ router.post("/register", (req, res, next) => { console.log("joi validation"); ne
 
 router.post("/login", AuthController.login);
 
-router.get("/logout", authMiddleware, AuthController.logout);
+router.get("/logout", validateTokenMiddleware, authMiddleware, AuthController.logout);
 
-router.get("/users/info", AuthController.info);
+router.get("/info", validateTokenMiddleware, rolesMiddleware(["ADMIN"]), AuthController.info);
 
 
 module.exports = router;

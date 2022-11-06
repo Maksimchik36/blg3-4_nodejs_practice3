@@ -1,5 +1,6 @@
 const { model, Schema } = require('mongoose');
 
+
 const SchemaUser = Schema({
     userName: {
         type: String, 
@@ -17,15 +18,15 @@ const SchemaUser = Schema({
         type: String,
         default: null,
     },
-    // roles: {
-    // }    
+    roles: [{
+        type: String,
+        ref: "Role",
+    }]    
 },
     {
     versionKey: false, 
     timestamps: true, 
 })
-
-
 
 
 const UserModel = model('user', SchemaUser)

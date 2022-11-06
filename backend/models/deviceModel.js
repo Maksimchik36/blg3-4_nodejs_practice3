@@ -1,5 +1,6 @@
 const { model, Schema } = require('mongoose');
 
+
 const SchemaDevice = Schema({
     model: {
         type: String, 
@@ -23,6 +24,7 @@ const SchemaDevice = Schema({
     versionKey: false, 
     timestamps: true, 
 })
+
 
 const DeviceModel = model('device', SchemaDevice);
 

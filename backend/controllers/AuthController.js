@@ -1,6 +1,6 @@
 // обертка для контроллеров для отлавливания ошибок (аналог try/catch)
 const asyncHandler = require('express-async-handler');
-const { UserModel } = require('../models');
+const { UserModel, RoleModel } = require('../models');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET_KEY } = process.env;
@@ -24,17 +24,24 @@ class AuthController{
         if (!hashPassword) {
             throw new Error("Unable to hash password");    
         }
+        // достает из коллекции роль "USER" для дальнейшего её присваивания пользователю
+        const userRole = await RoleModel.findOne({ value: "ADMIN" });
         // создает пользователя в БД
-        const user = await UserModel.create({ ...req.body, userPassword: hashPassword });
+        const user = await UserModel.create({
+            ...req.body,
+            userPassword: hashPassword,
+            roles: [userRole.value],
+        });
         if (!user) {
             throw new Error("Unable to save user to DB");           
         }
-        // присваивая userPassword: "secret" , скрываем hashPassword (для передачи ответа на фронтэнд)
-        const userToShow = { userEmail, userPassword: "secret" };
+        // присваивая userPassword: "secret" , заменят hashPassword (тольеко для передачи ответа на фронтэнд)
+         user.userPassword = "secret" ;
 
         // возвращает результат на фронтэнд. объект userToShow записывается в свойство data
-        res.status(201).json({ code: 201, status: 'Success', data: userToShow })   
+        res.status(201).json({ code: 201, status: 'Success', data: user })   
     })
+
 
     login = asyncHandler(async (req, res) => {
         const { userEmail, userPassword } = req.body;
@@ -51,7 +58,7 @@ class AuthController{
             throw new Error("Invalid login or password.");            
         }
         // записывает сгенерированный token в свойство объекта user.token
-        user.token = this.generateToken(user._id);
+        user.token = this.generateToken(user._id, user.roles);
         // сохраняет в БД
         await user.save();
         // проверяет - удачно ли сохранен токен
@@ -62,6 +69,7 @@ class AuthController{
         // возвращает результат на фронтэнд
         res.status(200).json({ code: 200, status: 'Success', data: user })  
     })
+
 
     logout = asyncHandler(async (req, res) => {
         const { id } = req.user;
@@ -79,13 +87,16 @@ class AuthController{
         res.status(200).json({ code: 200, status: 'Success', message: "Logout success." }) 
     })
 
+
     info = asyncHandler(async (req, res) => {
-        res.send(req.body)
+        res.send("Access granted. You are ADMIN.");
     })
 
+    
     // генерирует токен
-    generateToken = ((id) => {
-        const payload = { id };
+    generateToken = ((id, roles) => {
+        // загружаемые в токен данные, которые потом можно будет из него вытянуть
+        const payload = { id, roles };
         return jwt.sign(payload, JWT_SECRET_KEY, {expiresIn: "8h"})
     });
 

@@ -5,7 +5,6 @@ const { ErrorHandler } = require('./middlewares');
 // изменяет цвета консольных сообщений
 require("colors");
 
-
 // создает приложение
 const app = express();
 // делает читаемыми json-файлы
@@ -18,10 +17,10 @@ loadEnv();
 const { PORT } = process.env;
 
 // при запросе на '/api/v1/devices' его обработчик нужно искать в devicesRoutes
-app.use(devicesRoutesPrefix, require('./routes/devicesRoutes'))
+app.use(devicesRoutesPrefix, require('./routes/devicesRoutes'));
 
 // при запросе на '/api/v1/users' его обработчик нужно искать в authRoutes
-app.use(authRoutesPrefix, require('./routes/authRoutes'))
+app.use(authRoutesPrefix, require('./routes/authRoutes'));
 
 //коннектится к базе данных
 connectDb();

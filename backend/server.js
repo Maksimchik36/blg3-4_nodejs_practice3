@@ -1,6 +1,6 @@
 const express = require('express');
 const { loadEnv, connectDb } = require('../config');
-const { devicesRoutesPrefix } = require('../config/routes');
+const { devicesRoutesPrefix, authRoutesPrefix } = require('../config/routes');
 const { ErrorHandler } = require('./middlewares');
 // изменяет цвета консольных сообщений
 require("colors");
@@ -17,7 +17,10 @@ loadEnv();
 const { PORT } = process.env;
 
 // при запросе на '/api/v1/devices' его обработчик нужно искать в devicesRoutes
-app.use(devicesRoutesPrefix, require('./routes/devicesRoutes'))
+app.use(devicesRoutesPrefix, require('./routes/devicesRoutes'));
+
+// при запросе на '/api/v1/users' его обработчик нужно искать в authRoutes
+app.use(authRoutesPrefix, require('./routes/authRoutes'));
 
 //коннектится к базе данных
 connectDb();
